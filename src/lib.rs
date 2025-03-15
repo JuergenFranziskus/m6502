@@ -2,7 +2,6 @@ use core::{Core, P};
 
 use instr::{Am, Op};
 
-
 pub mod core;
 pub mod instr;
 #[cfg(test)]
@@ -94,7 +93,6 @@ impl Bus {
     const SYNC: u8 = 16;
 }
 
-
 const UNSTABLE_MAGIC: u8 = 0xEE;
 
 #[derive(Copy, Clone, Debug, PartialEq, Eq)]
@@ -149,7 +147,7 @@ impl M6502 {
             brk: Brk::Brk,
             cycle: 1,
             op: Op::Nop,
-            
+
             addr: 0,
             data: 0,
             wrap: false,
@@ -551,8 +549,15 @@ impl M6502 {
     }
     fn exec_indexed_indirect(&mut self, op: fn(&mut Self), bus: &mut Bus) {
         match self.cycle {
-            0 => { self.fetch(bus); self.next() }
-            1 => { bus.read(bus.data as u16); self.data = bus.data; self.next(); }
+            0 => {
+                self.fetch(bus);
+                self.next()
+            }
+            1 => {
+                bus.read(bus.data as u16);
+                self.data = bus.data;
+                self.next();
+            }
             2 => {
                 self.data = self.data.wrapping_add(self.core.x);
                 bus.read(self.data as u16);
@@ -601,8 +606,15 @@ impl M6502 {
     }
     fn exec_indirect(&mut self, op: fn(&mut Self), bus: &mut Bus) {
         match self.cycle {
-            0 => { self.fetch(bus); self.next(); }
-            1 => { self.addr = bus.data as u16; self.fetch(bus); self.next(); }
+            0 => {
+                self.fetch(bus);
+                self.next();
+            }
+            1 => {
+                self.addr = bus.data as u16;
+                self.fetch(bus);
+                self.next();
+            }
             2 => {
                 self.addr |= (bus.data as u16) << 8;
                 bus.read(self.addr);
@@ -1039,11 +1051,26 @@ impl M6502 {
     }
     fn exec_jam(&mut self, bus: &mut Bus) {
         match self.cycle {
-            0 => { bus.read(self.core.pc); self.next(); }
-            1 => { bus.read(0xFFFF); self.next(); }
-            2 => { bus.read(0xFFFE); self.next(); }
-            3 => { bus.read(0xFFFE); self.next(); }
-            4.. => { bus.read(0xFFFF); self.next(); }
+            0 => {
+                bus.read(self.core.pc);
+                self.next();
+            }
+            1 => {
+                bus.read(0xFFFF);
+                self.next();
+            }
+            2 => {
+                bus.read(0xFFFE);
+                self.next();
+            }
+            3 => {
+                bus.read(0xFFFE);
+                self.next();
+            }
+            4.. => {
+                bus.read(0xFFFF);
+                self.next();
+            }
         }
     }
     fn exec_jmp(&mut self) {

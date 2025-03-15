@@ -1,6 +1,9 @@
 use serde::Deserialize;
 
-use crate::{core::{Core, P}, Bus, M6502};
+use crate::{
+    Bus, M6502,
+    core::{Core, P},
+};
 
 #[derive(Deserialize)]
 struct Test {
@@ -26,7 +29,6 @@ struct State {
 #[derive(Deserialize)]
 struct Cycle(u16, u8, String);
 
-
 fn run_test(test: &Test, ram: &mut [u8; 65536]) {
     println!("Running test \"{}\"", test.name);
 
@@ -38,15 +40,13 @@ fn run_test(test: &Test, ram: &mut [u8; 65536]) {
         cpu.clock(&mut bus);
         if bus.rw() {
             bus.data = ram[bus.addr as usize];
-        }
-        else {
+        } else {
             ram[bus.addr as usize] = bus.data;
         }
 
         compare_cycle(cycle, bus);
     }
     cpu.clock(&mut bus);
-    
 
     compare_cpu(&test.end, cpu.core());
     compare_ram(&test.end, ram);
@@ -91,8 +91,6 @@ fn compare_cycle(cycle: &Cycle, bus: Bus) {
         eprintln!("RW   should {rw}, is {}", bus.rw());
     }
 
-
-
     if is_err {
         panic!("Bus activity does not match");
     }
@@ -125,7 +123,6 @@ fn compare_cpu(end: &State, cpu: Core) {
         eprintln!("Y  should {:0>2x}, is {:0>2x}", end.y, cpu.y);
     }
 
-
     if is_err {
         panic!("Cpu state does not match");
     }
@@ -144,7 +141,6 @@ fn compare_ram(end: &State, ram: &[u8; 65536]) {
         panic!("Memory does not match");
     }
 }
-
 
 fn run_test_file(path: &str) {
     let src = std::fs::read_to_string(path).unwrap();

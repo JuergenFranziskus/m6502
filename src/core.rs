@@ -248,12 +248,7 @@ impl Core {
     pub fn exec_sha(&mut self, addr: u16, wrap: bool) -> (u8, u16) {
         let hi = (addr >> 8) as u8;
         let out = self.a & self.x & hi.wrapping_add(!wrap as u8);
-        let hi = if wrap {
-            out
-        }
-        else {
-            hi
-        };
+        let hi = if wrap { out } else { hi };
         let addr = addr & 0xFF;
         let addr = addr | (hi as u16) << 8;
         (out, addr)
@@ -261,12 +256,7 @@ impl Core {
     pub fn exec_shx(&mut self, addr: u16, wrap: bool) -> (u8, u16) {
         let hi = (addr >> 8) as u8;
         let out = self.x & hi.wrapping_add(!wrap as u8);
-        let hi = if wrap {
-            out
-        }
-        else {
-            hi
-        };
+        let hi = if wrap { out } else { hi };
         let addr = addr & 0xFF;
         let addr = addr | (hi as u16) << 8;
         (out, addr)
@@ -274,12 +264,7 @@ impl Core {
     pub fn exec_shy(&mut self, addr: u16, wrap: bool) -> (u8, u16) {
         let hi = (addr >> 8) as u8;
         let out = self.y & hi.wrapping_add(!wrap as u8);
-        let hi = if wrap {
-            out
-        }
-        else {
-            hi
-        };
+        let hi = if wrap { out } else { hi };
         let addr = addr & 0xFF;
         let addr = addr | (hi as u16) << 8;
         (out, addr)
